@@ -574,6 +574,9 @@ def main():
         if args.load is None:
             raise ValueError("--load is required for watch mode.")
         brain = load_brain(args.load, input_size=input_size, hidden_sizes=hidden_sizes)
+        np.random.seed(args.seed)
+        if torch is not None:
+            torch.manual_seed(args.seed)
         watch_env = make_env(env_kwargs, enable_render=True)
         result = watch_brain(brain, watch_env, max_steps=args.max_steps)
         print(

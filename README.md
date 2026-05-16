@@ -55,6 +55,14 @@ The output includes:
 - `food`: average food eaten.
 - `life`: average final remaining robot life.
 
+To evaluate the same checkpoint across many seeds and print one row per seed plus aggregate statistics:
+
+```powershell
+python quick_eval.py --load robot_pygad_torch.npz --episodes 20 --seed-start 0 --seed-count 10
+```
+
+With the default `--episodes 1`, `quick_eval.py` evaluates one rollout per seed, so the reported metrics match the same single-episode style used by `watch` mode.
+
 ## Detailed Documentation
 
 - [Environment](docs/environment.md): explains the world, robot state, actions, observations, reward, life system, food spawning, and rendering.
