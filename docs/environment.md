@@ -34,7 +34,7 @@ Meaning of the parameters:
 
 - `world_size`: width and height of the square world in world coordinates.
 - `max_speed`: maximum forward or backward velocity magnitude.
-- `max_steps`: stored on the environment, but rollout stopping is primarily controlled by the external evaluation loop in `evolution.py`.
+- `max_steps`: maximum number of steps allowed in one episode.
 - `render_size`: pygame window size in pixels.
 - `enable_render`: whether pygame rendering is enabled.
 - `spawn_in_center`: if `True`, the robot starts at `(0, 0)`. If `False`, it starts at a random position near the center.
@@ -228,12 +228,13 @@ This rewards:
 
 ## Episode Termination
 
-The environment sets `done=True` when either of these is true:
+The environment sets `done=True` when any of these is true:
 
 - `life <= 0`
 - the attempted new position is outside the world
+- `step_count >= max_steps`
 
-In training and evaluation, the rollout loop in `evolution.py` can also stop early when the configured `max_steps` limit is reached.
+Training and evaluation in `evolution.py` also pass their own `max_steps` limit into the rollout loop, so both the environment and the outer loop now enforce the same cap.
 
 ## `step()` Return Value
 
@@ -292,6 +293,7 @@ spawn_in_center=True
 food_count=1
 obs_type="ray"
 enable_render=True
+max_steps=500
 ```
 
 Manual controls:
@@ -302,3 +304,4 @@ Manual controls:
 - down arrow: accelerate backward
 
 The demo prints observation and reward values for each step.
+It now also ends automatically when the environment reaches `max_steps`.

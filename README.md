@@ -75,6 +75,7 @@ Controls:
 - `Down Arrow`: accelerate backward.
 
 The manual demo currently uses `obs_type='ray'`, one food pellet, and starts the robot in the center.
+It also stops automatically when the environment reaches its `max_steps` limit.
 
 ## Agent Visualization
 

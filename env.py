@@ -35,8 +35,8 @@ class Robot2DEnv:
 
         self.spawn_radius = self.world_size * 0.15
         self.initial_life = 120
-        self.life_decay = 0.2
-        self.life_gain = 35
+        self.life_decay = 0.4
+        self.life_gain = 60
         self.food_radius = 0.2
 
         self.screen = None
@@ -104,7 +104,11 @@ class Robot2DEnv:
         self.step_count += 1
         obs = self._get_obs()
         reward = self._compute_reward(obs)
-        self.done = (self.life <= 0) or self._is_outside(new_pos)
+        self.done = (
+            (self.life <= 0)
+            or self._is_outside(new_pos)
+            or (self.step_count >= self.max_steps)
+        )
         info = {
             "step_count": self.step_count,
             "life": self.life,
