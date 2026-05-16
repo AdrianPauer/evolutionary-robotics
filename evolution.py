@@ -318,7 +318,7 @@ def evolve(
     checkpoint_every=10,
 ):
     test_obs = env.reset()
-    print(f"Observation: {test_obs}")
+    print(f"Observation: {test_obs}", flush=True)
 
     input_size = len(test_obs)
     population = create_population(population_size, input_size, hidden_sizes)
@@ -347,7 +347,7 @@ def evolve(
             best_fitness = fitnesses[0]
             best_brain = population[0].copy()
 
-        print(f"[{current_timestamp()}] Generation {generation}: best={fitnesses[0]:.2f}, avg={np.mean(fitnesses):.2f}")
+        print(f"[{current_timestamp()}] Generation {generation}: best={fitnesses[0]:.2f}, avg={np.mean(fitnesses):.2f}", flush=True)
 
         if checkpoint_path and checkpoint_every > 0 and generation % checkpoint_every == 0:
             save_generation_checkpoint(best_brain, checkpoint_path, generation)
@@ -407,7 +407,7 @@ def evolve_pygad(
     def on_generation(ga_instance):
         solution, solution_fitness, _ = ga_instance.best_solution()
         generation = ga_instance.generations_completed
-        print(f"[{current_timestamp()}] PyGAD generation {generation}: best={solution_fitness:.2f}")
+        print(f"[{current_timestamp()}] PyGAD generation {generation}: best={solution_fitness:.2f}", flush=True)
         if checkpoint_path and checkpoint_every > 0 and generation % checkpoint_every == 0:
             checkpoint_brain = TorchMLPBrain(input_size=input_size, hidden_sizes=hidden_sizes, output_size=2)
             checkpoint_brain.set_parameters(solution)
@@ -489,7 +489,7 @@ def checkpoint_filename(base_path, generation):
 def save_generation_checkpoint(brain, base_path, generation):
     checkpoint_path = checkpoint_filename(base_path, generation)
     brain.save(checkpoint_path)
-    print(f"[{current_timestamp()}] Saved checkpoint: {checkpoint_path}")
+    print(f"[{current_timestamp()}] Saved checkpoint: {checkpoint_path}", flush=True)
 
 
 def main():
@@ -529,12 +529,13 @@ def main():
             seed=args.seed + 50000,
             render_each=args.render_each,
         )
-        print(f"Saved {args.save}")
-        print(f"Best training fitness: {fitness:.2f}")
+        print(f"Saved {args.save}", flush=True)
+        print(f"Best training fitness: {fitness:.2f}", flush=True)
         print(
             "Quick eval: "
             f"fitness={report['fitness']:.2f}, reward={report['reward']:.2f}, "
-            f"steps={report['steps']:.1f}, food={report['food']:.2f}, life={report['life']:.1f}"
+            f"steps={report['steps']:.1f}, food={report['food']:.2f}, life={report['life']:.1f}",
+            flush=True,
         )
 
     elif args.mode == "train-simple":
@@ -551,7 +552,7 @@ def main():
         )
         env.close()
         best.save(args.save)
-        print(f"Saved {args.save}")
+        print(f"Saved {args.save}", flush=True)
 
     elif args.mode == "eval":
         if args.load is None:
@@ -567,7 +568,8 @@ def main():
         )
         print(
             f"fitness={report['fitness']:.2f}, reward={report['reward']:.2f}, "
-            f"steps={report['steps']:.1f}, food={report['food']:.2f}, life={report['life']:.1f}"
+            f"steps={report['steps']:.1f}, food={report['food']:.2f}, life={report['life']:.1f}",
+            flush=True,
         )
 
     elif args.mode == "watch":
@@ -581,7 +583,8 @@ def main():
         result = watch_brain(brain, watch_env, max_steps=args.max_steps)
         print(
             f"watch: fitness={result.fitness:.2f}, reward={result.total_reward:.2f}, "
-            f"steps={result.steps}, food={result.food_eaten}, life={result.final_life:.1f}"
+            f"steps={result.steps}, food={result.food_eaten}, life={result.final_life:.1f}",
+            flush=True,
         )
 
 
