@@ -27,6 +27,9 @@ parser = argparse.ArgumentParser(
 )
 
 
+parser.add_argument("--recodex", default=False, action="store_true", help="Running in ReCodEx.")
+parser.add_argument("--render_each", default=0, type=int, help="Render every N evaluation episodes; 0 disables rendering.")
+parser.add_argument("--seed", default=0, type=int, help="Random seed.")
 parser.add_argument("--mode", choices=("train-pygad", "train-simple", "eval", "watch"), default="train-pygad", help="Program mode.")
 parser.add_argument("--save", default="robot_pygad_torch.npz", help="Checkpoint path written after training.")
 parser.add_argument("--load", default=None, help="Checkpoint path loaded by eval or watch mode.")
@@ -38,7 +41,7 @@ parser.add_argument("--hidden-sizes", default="16,16", help="Comma-separated hid
 parser.add_argument("--population-size", default=50, type=int, help="Number of candidate networks per generation.")
 parser.add_argument("--generations", default=30, type=int, help="Number of evolutionary generations.")
 parser.add_argument("--episodes", default=2, type=int, help="Rollout episodes per candidate or evaluation.")
-parser.add_argument("--max-steps", default=350, type=int, help="Maximum steps per rollout.")
+parser.add_argument("--max-steps", default=500, type=int, help="Maximum steps per rollout.")
 parser.add_argument("--mutation-percent-genes", default=10, type=int, help="Percentage of genes mutated by PyGAD.")
 parser.add_argument("--mutation-scale", default=0.12, type=float, help="Maximum absolute PyGAD mutation change.")
 
