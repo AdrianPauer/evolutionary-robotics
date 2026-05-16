@@ -128,35 +128,6 @@ python evolution.py --mode watch --load my_agent.npz
 
 ## Environment Arguments
 
-### `--obs-type TYPE`
-
-Default:
-
-```text
-ray
-```
-
-Allowed values:
-
-- `ray`: observation is five ray distances in a 30 degree field of view.
-- `food`: observation is nearest-food relative angle and normalized distance.
-
-For `ray`, each input is normalized from `0` to `1`. `0` means food is very close on that ray, and `1` means no food was detected within ray range.
-
-For `food`, the observation is:
-
-```text
-[relative_angle, distance]
-```
-
-Where `relative_angle` is clipped to `-0.5..0.5`, and larger `distance` means closer food.
-
-Example:
-
-```powershell
-python evolution.py --mode train-pygad --obs-type food
-```
-
 ### `--food-count N`
 
 Default:

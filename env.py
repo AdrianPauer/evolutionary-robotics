@@ -15,7 +15,7 @@ class Robot2DEnv:
                  enable_render=False,
                  spawn_in_center=False,
                  food_count=6,
-                 obs_type = 'food'):
+                 obs_type='ray'):
         
         self.world_size = world_size
         self.half_size = world_size / 2.0
@@ -42,6 +42,9 @@ class Robot2DEnv:
         self.screen = None
         self.clock = None
         self.font = None
+
+        if obs_type != "ray":
+            raise ValueError("Robot2DEnv only supports obs_type='ray'.")
 
         self.obs_type = obs_type
 
@@ -118,20 +121,10 @@ class Robot2DEnv:
         return obs, reward, self.done, info
 
     def _get_obs(self):
-        
-        if self.obs_type == 'food':
-            relative_angle, distance = self._nearest_food_info()
-            obs = np.array([relative_angle, distance], dtype=np.float32)
-        
-        elif self.obs_type == 'ray':
-            obs = self._ray_distances()
-        return obs
+        return self._ray_distances()
 
     def _compute_reward(self, obs):
-        if self.obs_type == 'ray':
-            return 0.01 + self.velocity / 20 + (1 - sum(obs)/len(obs)) * 10
-        else:
-            return max(0.0, self.velocity) 
+        return 0.01 + self.velocity / 20 + (1 - sum(obs) / len(obs)) * 10
 
     def _is_outside(self, point):
         x, y = point
@@ -161,26 +154,6 @@ class Robot2DEnv:
                 self.food_eaten += 1
                 self.food[index] = self._random_food_position()
                 break
-
-    def _nearest_food_info(self):
-        if not self.food:
-            return 0.0, 0.0
-
-        distances = [np.linalg.norm(food_pos - self.pos) for food_pos in self.food]
-        nearest_index = int(np.argmin(distances))
-        nearest_food = self.food[nearest_index]
-        vec = nearest_food - self.pos
-        dist = distances[nearest_index]
-
-        angle_to_food = math.atan2(vec[1], vec[0])
-        delta = angle_to_food - self.angle
-        delta = (delta + math.pi) % (2 * math.pi) - math.pi
-        relative_angle = float(np.clip(delta / math.pi, -0.5, 0.5))
-
-        max_dist = math.sqrt(2.0) * self.half_size
-        distance_norm = float(np.clip(1.0 - dist / max_dist, 0.0, 1.0))
-
-        return relative_angle, distance_norm
 
     def _calculate_single_ray(self, ray_angle):
         # 1. Create the unit vector for this specific ray

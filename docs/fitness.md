@@ -24,15 +24,7 @@ Both values are clipped by the environment to the range `-1..1`.
 
 The environment computes a reward at every step. The total rollout reward is the sum of all step rewards.
 
-For `--obs-type food`, the step reward is:
-
-```text
-reward = max(0, velocity)
-```
-
-This rewards forward motion only. Backward movement does not add reward.
-
-For `--obs-type ray`, the step reward is:
+The current environment uses ray-based observation only, and the step reward is:
 
 ```text
 reward = 0.01 + velocity / 20 + (1 - average_ray_distance) * 10
@@ -155,7 +147,6 @@ python evolution.py --mode eval --load robot_pygad_torch.npz --seed 123
 
 Fitness is only directly comparable when the environment and evaluation settings are the same, especially:
 
-- `--obs-type`
 - `--food-count`
 - `--spawn-in-center` or `--random-spawn`
 - `--episodes`

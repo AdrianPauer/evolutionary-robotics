@@ -26,7 +26,7 @@ Robot2DEnv(
     enable_render=False,
     spawn_in_center=False,
     food_count=6,
-    obs_type="food",
+    obs_type="ray",
 )
 ```
 
@@ -39,7 +39,7 @@ Meaning of the parameters:
 - `enable_render`: whether pygame rendering is enabled.
 - `spawn_in_center`: if `True`, the robot starts at `(0, 0)`. If `False`, it starts at a random position near the center.
 - `food_count`: number of food pellets present at one time.
-- `obs_type`: observation mode, either `food` or `ray`.
+- `obs_type`: currently only `"ray"` is supported.
 
 ## World Geometry
 
@@ -157,28 +157,6 @@ When a food pellet is eaten, only that pellet is replaced by a newly sampled one
 
 ## Observation Space
 
-The observation depends on `obs_type`.
-
-### `obs_type="food"`
-
-Observation:
-
-```text
-[relative_angle, distance_norm]
-```
-
-Meaning:
-
-- `relative_angle`: angle from the robot heading toward the nearest food, normalized by `pi` and clipped to `-0.5..0.5`
-- `distance_norm`: normalized closeness to the nearest food, in `0..1`
-
-For `distance_norm`:
-
-- `0` means far away
-- `1` means very close
-
-### `obs_type="ray"`
-
 Observation:
 
 ```text
@@ -203,18 +181,6 @@ Each ray returns a normalized distance:
 The rays detect food only. They do not measure walls.
 
 ## Reward
-
-Reward depends on `obs_type`.
-
-### Reward for `obs_type="food"`
-
-```text
-reward = max(0, velocity)
-```
-
-Only forward movement is rewarded.
-
-### Reward for `obs_type="ray"`
 
 ```text
 reward = 0.01 + velocity / 20 + (1 - average_ray_distance) * 10
@@ -291,7 +257,6 @@ starts a manual demo with:
 ```text
 spawn_in_center=True
 food_count=1
-obs_type="ray"
 enable_render=True
 max_steps=500
 ```
