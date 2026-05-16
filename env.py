@@ -13,6 +13,7 @@ class Robot2DEnv:
                  max_steps=500,
                  render_size=(800, 600),
                  enable_render=False,
+                 vision_mask=True,
                  spawn_in_center=False,
                  food_count=6,
                  obs_type='ray'):
@@ -23,6 +24,7 @@ class Robot2DEnv:
         self.max_steps = max_steps
         self.render_size = render_size
         self.enable_render = enable_render
+        self.vision_mask = vision_mask
         self.spawn_in_center = spawn_in_center
         self.food_count = food_count
 
@@ -231,6 +233,8 @@ class Robot2DEnv:
         self._draw_foods()
         self._draw_robot()
         self._draw_rays()
+        if self.vision_mask:
+            self._draw_vision_mask()
         self._draw_hud()
 
         pygame.display.flip()
@@ -294,7 +298,9 @@ class Robot2DEnv:
             self.screen.blit(text, (x + 8, y - 2))
             step_text = self.font.render(f"Step: {self.step_count}", True, (240, 240, 240))
             self.screen.blit(step_text, (x + 12, y + bar_height + 6))
-    
+            vision_text = self.font.render(f"Vision mask: {'ON' if self.vision_mask else 'OFF'}", True, (240, 240, 240))
+            self.screen.blit(vision_text, (x + 12, y + bar_height + 28))
+
     def _draw_rays(self):
         num_rays = 5
         fov = math.radians(30)
@@ -315,10 +321,39 @@ class Robot2DEnv:
             # Draw the line from robot center to hit point
             pygame.draw.line(self.screen, color, origin, target, 1)
 
+    def _ray_hit_points(self):
+        fov = math.radians(30)
+        start_angle = self.angle - (fov / 2)
+        step = fov / (self.ray_count - 1)
+
+        hit_points = []
+        for i in range(self.ray_count):
+            angle = start_angle + (i * step)
+            dist = self._calculate_single_ray(angle)
+            hit_points.append(self.pos + dist * np.array([math.cos(angle), math.sin(angle)]))
+        return hit_points
+
+    def _draw_vision_mask(self):
+        overlay = pygame.Surface(self.render_size, pygame.SRCALPHA)
+        overlay.fill((0, 0, 0, 255))
+
+        polygon_points = [self._world_to_screen(self.pos)]
+        polygon_points.extend(self._world_to_screen(point) for point in self._ray_hit_points())
+        polygon_points.append(self._world_to_screen(self.pos))
+
+        pygame.draw.polygon(overlay, (0, 0, 0, 0), polygon_points)
+        pygame.draw.circle(
+            overlay,
+            (0, 0, 0, 0),
+            self._world_to_screen(self.pos),
+            max(8, int(self.robot_radius * self.render_size[1] / self.world_size * 1.5)),
+        )
+        self.screen.blit(overlay, (0, 0))
+
 
 
 def demo():
-    env = Robot2DEnv(enable_render=True, spawn_in_center=True, food_count=1, obs_type= 'ray')
+    env = Robot2DEnv(enable_render=True, vision_mask=True, spawn_in_center=True, food_count=1, obs_type='ray')
     obs = env.reset()
     running = True
 
@@ -326,6 +361,8 @@ def demo():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+                env.vision_mask = not env.vision_mask
 
         keys = pygame.key.get_pressed()
         steer = 0.0

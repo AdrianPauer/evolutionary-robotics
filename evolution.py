@@ -38,6 +38,7 @@ parser.add_argument("--load", default=None, help="Checkpoint path loaded by eval
 parser.add_argument("--food-count", default=1, type=int, help="Number of food pellets in the world.")
 parser.add_argument("--spawn-in-center", default=True, action="store_true", help="Start the robot at the center.")
 parser.add_argument("--random-spawn", default=False, action="store_true", help="Start the robot at a random position near the center.")
+parser.add_argument("--vision-mask", default=True, action="store_true", help="Render only the area visible inside the robot ray field.")
 parser.add_argument("--hidden-sizes", default="16,16", help="Comma-separated hidden layer sizes.")
 parser.add_argument("--population-size", default=50, type=int, help="Number of candidate networks per generation.")
 parser.add_argument("--generations", default=30, type=int, help="Number of evolutionary generations.")
@@ -210,6 +211,7 @@ def env_kwargs_from_env(env, enable_render=False):
         "spawn_in_center": env.spawn_in_center,
         "food_count": env.food_count,
         "obs_type": env.obs_type,
+        "vision_mask": env.vision_mask,
     }
 
 
@@ -497,6 +499,7 @@ def main():
         "spawn_in_center": args.spawn_in_center and not args.random_spawn,
         "food_count": args.food_count,
         "enable_render": False,
+        "vision_mask": args.vision_mask,
         "obs_type": "ray",
     }
     probe_env = make_env(env_kwargs, enable_render=False)

@@ -26,6 +26,7 @@ Useful options:
 - `--food-count 1` sets how many food pellets exist in the world.
 - `--hidden-sizes 16,16` changes the neural network hidden layers.
 - `--random-spawn` trains from random starting positions instead of the center.
+- `--vision-mask` renders only the area inside the robot ray field.
 - `--episodes 3` evaluates each candidate on more rollouts, which is slower but less noisy.
 - `--max-steps 500` lets each rollout run longer.
 - `--checkpoint-every 10` saves a checkpoint every 10 generations during training. Use `0` to disable periodic checkpoints.
@@ -74,6 +75,7 @@ Controls:
 - `Right Arrow`: steer right.
 - `Up Arrow`: accelerate forward.
 - `Down Arrow`: accelerate backward.
+- `V`: toggle the vision-mask visualization on or off. The manual demo starts with the mask enabled by default.
 
 The manual demo currently uses `obs_type='ray'`, one food pellet, and starts the robot in the center.
 It also stops automatically when the environment reaches its `max_steps` limit.
@@ -83,7 +85,7 @@ It also stops automatically when the environment reaches its `max_steps` limit.
 Watch a trained agent in the pygame window:
 
 ```powershell
-python evolution.py --mode watch --load robot_pygad_torch.npz --max-steps 10000
+python evolution.py --mode watch --load robot_pygad_torch.npz --max-steps 10000 --vision-mask
 ```
 
 Use the same environment options as training if the checkpoint was trained with different settings. For example:
