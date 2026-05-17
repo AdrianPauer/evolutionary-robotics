@@ -307,6 +307,13 @@ class Robot2DEnv:
         if self.screen is None:
             self._init_pygame()
 
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                self.done = True
+                return
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_v:
+                self.vision_mask = not self.vision_mask
+
         self.screen.fill((20, 20, 30))
         self._draw_world()
         self._draw_obstacle()
